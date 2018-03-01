@@ -1,0 +1,182 @@
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../bower_components/app-layout/app-drawer/app-drawer.html">
+<link rel="import" href="../../bower_components/app-layout/app-drawer-layout/app-drawer-layout.html">
+<link rel="import" href="../../bower_components/app-layout/app-header/app-header.html">
+<link rel="import" href="../../bower_components/app-layout/app-header-layout/app-header-layout.html">
+<link rel="import" href="../../bower_components/app-layout/app-toolbar/app-toolbar.html">
+
+<link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../../bower_components/iron-pages/iron-pages.html">
+<link rel="import" href="../../bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="../../bower_components/app-route/app-route.html">
+<link rel="import" href="../../bower_components/app-route/app-location.html">
+
+<link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../../bower_components/paper-listbox/paper-listbox.html">
+<link rel="import" href="../../bower_components/paper-item/paper-item.html">
+<link rel="import" href="../../bower_components/paper-item/paper-icon-item.html">
+
+
+<link rel="import" href="../../src/sieve-main/sieve-main.html">
+<link rel="import" href="../../views/view-home.html">
+<link rel="import" href="../../views/view-sieve.html">
+<link rel="import" href="../../views/view-404.html">
+
+
+
+
+<dom-module id="polymer-app-app">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+      html, body {
+        margin: 0 auto;
+        font-family: 'Roboto', 'Noto', sans-serif;
+        -webkit-font-smoothing: antialiased;
+        background: #f1f1f1;
+      }
+      app-toolbar {
+        background-color: var(--paper-blue-600);
+      }
+      paper-icon-button {
+        --paper-icon-button-ink-color: white;
+      }
+      paper-icon-button + [main-title] {
+        margin-left: 24px;
+      }
+      paper-item {
+        background-color: var(--paper-blue-600);
+        color: #fff;
+      }
+      paper-listbox > a  {
+        text-decoration: none;
+        color: #fff;
+      }
+      paper-listbox {
+        background-color: var(--paper-blue-600);
+        color: #fff;
+      }
+      app-header {
+        @apply --layout-fixed-top;
+        color: #fff;
+        --app-header-background-rear-layer: {
+          background-color: #ef6c00;
+        }
+      }
+      app-drawer {
+        color: #fff;
+        --app-drawer-scrim-backgroud: rgba(0, 0, 100, 0.8);
+        --app-drawer-content-container: {
+          background-color: var(--paper-blue-600);
+          box-shadow: 1px 0 2px 1px rgba(0,0,0,0.18);
+        }
+      }
+      .drawer-content {
+        margin-top: 80px;
+        height: calc(100% - 80px);
+        overflow: auto;
+      }
+      .container {
+        width: 50%;
+        margin: 0 auto;
+      }
+    </style>
+    
+    <app-drawer-layout force-narrow>
+
+        <app-header-layout>
+          <app-header slot="header">
+            <app-toolbar>
+              <paper-icon-button class="drawerButton" icon="menu"></paper-icon-button>
+              <div main-title>Test App</div>
+            </app-toolbar>
+          </app-header>
+
+          <app-location route="{{route}}"></app-location>
+          <app-route
+            route="{{route}}"
+            pattern="/:page"
+            data="{{routeData}}"
+            tail="{{subroute}}"></app-route>
+
+          <iron-pages selected="[[page]]" attr-for-selected="name" fallback-selection="404" role="main">
+            <view-home name="home"></view-home>
+            <view-sieve name="sieve"></view-sieve>
+            <view-404 name="404"></view-404>
+          </iron-pages>
+        </app-header-layout>
+
+        <app-drawer id="drawer" slot="drawer" swipe-open>
+          <paper-icon-button class="drawerButton" icon="close" style="float:right;"></paper-icon-button>
+          <div class="drawer-content">
+            <paper-listbox>
+              <template is="dom-repeat" items="{{navItems}}">
+                <a name="{{item.page}}" href="/{{item.page}}" tabindex="-1" on-tap="linkTap">
+                  <paper-icon-item>
+                    <iron-icon icon="{{item.icon}}" slot="item-icon"></iron-icon>
+                    {{item.name}}
+                  </paper-icon-item>
+                </a>
+              </template>
+            </paper-listbox>
+          </div>
+        </app-drawer>
+    </app-drawer-layout>
+    
+  </template>
+
+  <script>
+    /**
+     * @customElement
+     * @polymer
+     */
+    Polymer({
+      is: 'polymer-app-app',
+      properties: {
+        page: {
+          type: String,
+          reflectToAttribute: true,
+          observer: '_pageChanged'
+        },
+        navItems: {
+          type: Array,
+          value: [{name:'Home', page:'home', icon:'home'}, {name:'Sieve', page:'sieve', icon:'gavel'}, 
+                  {name:'Dragula', page:'dragula', icon:''}]
+        },
+        defaultView: {
+          type: String,
+          value: 'main'
+        }
+      },
+      observers: [
+        '_routePageChanged(routeData.page)'
+      ],
+      ready: function() {
+        var drawer = this.$$('#drawer');
+        var buttons = Polymer.dom(this.root).querySelectorAll('.drawerButton');
+        for (var drawerButton of buttons) {
+          drawerButton.addEventListener('tap', function () {
+            drawer.toggle();
+          });
+        }
+      },
+      _routePageChanged: function(page) {
+        this.page = page || this.defaultView;
+      },
+      _pageChanged: function(page) {
+        var resolvedPageUrl = this.resolveUrl('/views/view-' + page + '.html');
+        this.importHref(resolvedPageUrl, null, this._showPage404, true);
+      },
+      _showPage404: function() {
+        this.page = '404';
+      },
+      linkTap: function() {
+        var drawer = this.$$('#drawer');
+        drawer.toggle();
+      }
+    });
+
+  </script>
+</dom-module>

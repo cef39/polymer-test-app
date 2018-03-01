@@ -1,0 +1,105 @@
+<link rel="import" href="../bower_components/paper-card/paper-card.html">
+<link rel="import" href="../bower_components/paper-listbox/paper-listbox.html">
+
+<dom-module id="view-home">
+    <template>
+        <style>
+            .event-title {
+                font-weight: bold;
+                font-size: 15px;
+            }
+            .event-date {
+                font-size: 10px;
+                font-style: italic;
+            }
+            .event-details {
+                font-size: 13px;
+            }
+            .event-header {
+                @apply --paper-font-headline
+            }
+            .container {
+                width: 50%;
+                margin: 0 auto;
+            }
+            .left-container {
+                float: left;
+                width: 20%;
+            }
+            .right-container {
+                width: 20%;
+                float: right;
+                margin-right: 10px;
+            }
+            paper-card.white {
+                --paper-card-header-color: #fff;
+            }
+            paper-listbox {
+                margin-top: 15px;
+            }
+            paper-card {
+                font: #fff;
+                width: 100%;
+                margin: 10px;
+                --paper-card-header-image: {
+                    max-height: 250px;
+                    background-position: center center;
+                }
+                
+            }
+            div.container > paper-card {
+                --paper-card-header-text: {
+                    text-shadow: -1px -1px 0 #000,
+                                 1px -1px 0 #000,
+                                 -1px 1px 0 #000,
+                                 1px 1px 0 #000;
+                }
+            }
+        </style>
+        <div>
+            <div class="right-container">
+                <paper-card heading="Weather">
+                    <div class="card-content">
+                       IT'S ALWAYS SUNNY IN PHILADELPHIA.
+                    </div>
+                </paper-card>
+            </div>
+            <div class="left-container">
+                <paper-card heading="Filler Information">
+                    <div class="card-content">
+                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc faucibus nisi nec felis rutrum ullamcorper. Aenean dignissim dolor eu efficitur luctus. Nunc convallis felis ut cursus euismod. Mauris dolor lectus, aliquam sed feugiat mattis, egestas id lorem. Donec vel massa eu magna gravida bibendum et dapibus justo. Pellentesque libero enim, rhoncus eget molestie eu, eleifend sed urna. Ut sollicitudin dictum libero sit amet aliquam. Morbi mollis at ex et imperdiet. Nam gravida, ligula a tincidunt tempus, velit erat dapibus nisi, accumsan maximus justo nibh quis risus. Aliquam massa augue, faucibus euismod mi aliquam, fermentum pulvinar elit. Phasellus sollicitudin risus mi, non interdum velit malesuada sed. Donec neque justo, tempus non massa eget, suscipit porttitor enim. Interdum et malesuada fames ac ante ipsum primis in faucibus. Sed at dignissim velit.
+                    </div>
+                </paper-card>
+            </div>
+            <div class="container">
+                <template is="dom-repeat" items="{{events}}">
+                    <paper-card heading={{item.title}} image='{{item.img}}' class="white">
+                        <div class="card-content">
+                            <div class="event-date">{{item.date}}</div>
+                            <div class="event-details">{{item.details}}</div>
+                        </div>
+                    </paper-card>
+                </template>
+            </div>
+            
+        </div>
+    </template>
+
+    <script>
+        Polymer({
+            is: "view-home",
+            properties: {
+                events: {
+                    type: Array,
+                    value: 
+                    [
+                        { title: "Christian's Birthday!", date: "December 5, 2018", details: "Time to celebrate!", img: "../images/home/cake.jpg" },
+                        { title: "Vikings first invaded England!", date: "November 1, 866", details: "Time to celebrate!", img: "../images/home/england.png" }
+                    ]
+                }
+            },
+        });
+    </script>
+</dom-module>
+
+
